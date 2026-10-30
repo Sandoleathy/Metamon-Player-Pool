@@ -37,4 +37,4 @@ def format_for_agent(fmt: str) -> str:
     return FORMAT_ALIASES.get(fmt.lower(), fmt.lower())
 
 
-METAMON_CACHE_DIR = os.environ.get("METAMON_CACHE_DIR", None)
+METAMON_CACHE_DIR = os.environ.get("METAMON_CACHE_DIR", './metamon_cache')

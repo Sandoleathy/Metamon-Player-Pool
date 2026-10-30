@@ -1,6 +1,11 @@
 *logs_and_checkpoints/
 checkpoints/
 
+# Metamon runtime cache (METAMON_CACHE_DIR):
+# HuggingFace checkpoints, team sets and usage stats are downloaded on demand,
+# ~3.2 GB locally. Never commit them.
+metamon_cache/
+
 # Weights & Biases
 wandb/
 

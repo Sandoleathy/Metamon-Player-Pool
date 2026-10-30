@@ -1,0 +1,460 @@
+{
+  "generated_at": "2026-10-26T23:59:20+08:00",
+  "server": {
+    "websocket_url": "ws://localhost:8000/showdown/websocket",
+    "format": "gen9ou",
+    "team_set": "competitive"
+  },
+  "usage": "Pick a username and challenge it in the given format, e.g. '/challenge MM-Kakuna, gen9ou'. Every player accepts challenges from anyone and plays until it loses/forfeits or the battle ends. RL players load their checkpoint on the first challenge they receive.",
+  "players": [
+    {
+      "username": "MM-Kakuna",
+      "display_name": "Kakuna",
+      "kind": "rl",
+      "description": "Best public metamon policy (Dec 2025). Superkazam finetuned on 7.8M additional high-temperature self-play battles.",
+      "agent": "Kakuna",
+      "baseline": null,
+      "checkpoint": 34,
+      "params": "142M",
+      "strength": "Gen9OU GXE ~71% vs humans with sample teams (paper Table 1).",
+      "tags": [
+        "strongest",
+        "gen9ou",
+        "transformer"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Kakuna, gen9ou"
+    },
+    {
+      "username": "MM-Kadabra3",
+      "display_name": "Kadabra3",
+      "kind": "rl",
+      "description": "PokéAgent Challenge organizer baseline; played as PAC-MM-Wildcard / PAC-MM-Mystery during qualification.",
+      "agent": "Kadabra3",
+      "baseline": null,
+      "checkpoint": 20,
+      "params": "57M",
+      "strength": "Gen9OU GXE ~64% vs humans; would have been #3 seed in the Gen9OU qualifier.",
+      "tags": [
+        "strong",
+        "gen9ou",
+        "organizer-baseline"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Kadabra3, gen9ou"
+    },
+    {
+      "username": "MM-Kadabra4",
+      "display_name": "Kadabra4",
+      "kind": "rl",
+      "description": "Final Kadabra trained on the full 11.6M self-play + parsed-replays-v4 corpus.",
+      "agent": "Kadabra4",
+      "baseline": null,
+      "checkpoint": 50,
+      "params": "57M",
+      "strength": "#2 Gen9OU seed behind FoulPlay if it had been public; stronger than Kadabra3 on diverse teams.",
+      "tags": [
+        "strong",
+        "gen9ou",
+        "organizer-baseline"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Kadabra4, gen9ou"
+    },
+    {
+      "username": "MM-Alakazam",
+      "display_name": "Alakazam",
+      "kind": "rl",
+      "description": "Last model of the PokéAgent Challenge effort; Kadabra4 finetuned on a dataset patched for tera-type visibility.",
+      "agent": "Alakazam",
+      "baseline": null,
+      "checkpoint": 8,
+      "params": "57M",
+      "strength": "Slightly better than Kadabra3/4 on the current (patched) server, more robust across diverse teams.",
+      "tags": [
+        "strong",
+        "gen9ou"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Alakazam, gen9ou"
+    },
+    {
+      "username": "MM-Abra",
+      "display_name": "Abra",
+      "kind": "rl",
+      "description": "Best publicly available Gen9OU agent during the NeurIPS 2025 PokéAgent Challenge; the basis of many third-party submissions.",
+      "agent": "Abra",
+      "baseline": null,
+      "checkpoint": 40,
+      "params": "57M",
+      "strength": "Gen9OU GXE ~50% vs humans with sample teams.",
+      "tags": [
+        "gen9ou",
+        "public-baseline"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Abra, gen9ou"
+    },
+    {
+      "username": "MM-Superkazam",
+      "display_name": "Superkazam",
+      "kind": "rl",
+      "description": "Revisits the PokéAgent Challenge dataset at ~142M parameters (11.6M self-play + 4M human battles).",
+      "agent": "Superkazam",
+      "baseline": null,
+      "checkpoint": 50,
+      "params": "142M",
+      "strength": "Between the 57M Kadabra line and Kakuna.",
+      "tags": [
+        "gen9ou",
+        "transformer"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Superkazam, gen9ou"
+    },
+    {
+      "username": "MM-Kadabra2",
+      "display_name": "Kadabra2",
+      "kind": "rl",
+      "description": "Mid-challenge policy; played on the ladder as PAC-MM-Alakazam.",
+      "agent": "Kadabra2",
+      "baseline": null,
+      "checkpoint": 44,
+      "params": "57M",
+      "strength": "Held the top organizer Gen9OU rank at the end of the summer 2025 practice ladder.",
+      "tags": [
+        "gen9ou",
+        "organizer-baseline"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Kadabra2, gen9ou"
+    },
+    {
+      "username": "MM-Kadabra",
+      "display_name": "Kadabra",
+      "kind": "rl",
+      "description": "Early PokéAgent Challenge self-play policy (gens 1-4 and 9).",
+      "agent": "Kadabra",
+      "baseline": null,
+      "checkpoint": 46,
+      "params": "57M",
+      "strength": "Held the top organizer Gen9OU rank for most of the summer 2025 practice ladder.",
+      "tags": [
+        "gen9ou",
+        "organizer-baseline"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Kadabra, gen9ou"
+    },
+    {
+      "username": "MM-Minikazam",
+      "display_name": "Minikazam",
+      "kind": "rl",
+      "description": "Tiny RNN trained on parsed-replays-v4 plus ~5M self-play battles; a cheap starting point for finetuning.",
+      "agent": "Minikazam",
+      "baseline": null,
+      "checkpoint": 40,
+      "params": "4.7M",
+      "strength": "Weakest of the modern RL policies, but cheap to run on CPU.",
+      "tags": [
+        "gen9ou",
+        "small",
+        "rnn"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Minikazam, gen9ou"
+    },
+    {
+      "username": "MM-SmallRLGen9",
+      "display_name": "SmallRLGen9Beta",
+      "kind": "rl",
+      "description": "First Gen9-compatible prototype; trained only on human replays (parsed-replays v3).",
+      "agent": "SmallRLGen9Beta",
+      "baseline": null,
+      "checkpoint": 24,
+      "params": "~15M",
+      "strength": "Roughly LargeRL-level in gens 1-4, weakest Gen9OU policy in the pool.",
+      "tags": [
+        "gen9ou",
+        "prototype",
+        "small"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-SmallRLGen9, gen9ou"
+    },
+    {
+      "username": "MM-Random",
+      "display_name": "RandomBaseline",
+      "kind": "heuristic",
+      "description": "Uniformly picks a legal move (or switch). Measures the floor of the pool.",
+      "agent": null,
+      "baseline": "RandomBaseline",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Very weak; sanity-check opponent.",
+      "tags": [
+        "heuristic",
+        "random"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Random, gen9ou"
+    },
+    {
+      "username": "MM-BugCatcher",
+      "display_name": "BugCatcher",
+      "kind": "heuristic",
+      "description": "Actively bad trainer: always picks the least damaging move and the worst type matchup when forced to switch.",
+      "agent": null,
+      "baseline": "BugCatcher",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Very weak; sanity-check opponent.",
+      "tags": [
+        "heuristic",
+        "random"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-BugCatcher, gen9ou"
+    },
+    {
+      "username": "MM-MaxBP",
+      "display_name": "MaxBPBaseline",
+      "kind": "heuristic",
+      "description": "Usually picks the available move with the highest base power (10% random).",
+      "agent": null,
+      "baseline": "MaxBPBaseline",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Weak; no type or stat awareness.",
+      "tags": [
+        "heuristic",
+        "greedy"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-MaxBP, gen9ou"
+    },
+    {
+      "username": "MM-Gen1Trainer",
+      "display_name": "Gen1Trainer",
+      "kind": "heuristic",
+      "description": "Gen-1-flavoured trainer: random moves, first available switch when forced.",
+      "agent": null,
+      "baseline": "Gen1Trainer",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Weak.",
+      "tags": [
+        "heuristic",
+        "gen1"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Gen1Trainer, gen9ou"
+    },
+    {
+      "username": "MM-Gen1Switch",
+      "display_name": "Gen1TrainerGoodSwitching",
+      "kind": "heuristic",
+      "description": "Gen1Trainer with type/speed-aware switching when forced to switch.",
+      "agent": null,
+      "baseline": "Gen1TrainerGoodSwitching",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Weak.",
+      "tags": [
+        "heuristic",
+        "gen1"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Gen1Switch, gen9ou"
+    },
+    {
+      "username": "MM-Gen1Boss",
+      "display_name": "Gen1BossAI",
+      "kind": "heuristic",
+      "description": "Emulates the Gen 1 'Good AI': random moves, but prefers stat boosts on the first turn and super-effective moves.",
+      "agent": null,
+      "baseline": "Gen1BossAI",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Weak; Gen 1 logic applied to Gen 9.",
+      "tags": [
+        "heuristic",
+        "gen1"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Gen1Boss, gen9ou"
+    },
+    {
+      "username": "MM-BasicSwitch",
+      "display_name": "BasicSwitcher",
+      "kind": "heuristic",
+      "description": "Greedy damage dealer that switches on bad type matchups.",
+      "agent": null,
+      "baseline": "BasicSwitcher",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Low.",
+      "tags": [
+        "heuristic",
+        "damage"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-BasicSwitch, gen9ou"
+    },
+    {
+      "username": "MM-Grunt",
+      "display_name": "Grunt",
+      "kind": "heuristic",
+      "description": "Maximally offensive: picks the highest estimated damage move using the damage formula and type chart; best type matchup when switching.",
+      "agent": null,
+      "baseline": "Grunt",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate-low; no status/boosting play.",
+      "tags": [
+        "heuristic",
+        "damage"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-Grunt, gen9ou"
+    },
+    {
+      "username": "MM-GymLeader",
+      "display_name": "GymLeader",
+      "kind": "heuristic",
+      "description": "Grunt plus health awareness: boosts when healthy, heals when low.",
+      "agent": null,
+      "baseline": "GymLeader",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate-low; a step above Grunt.",
+      "tags": [
+        "heuristic",
+        "damage",
+        "healing"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-GymLeader, gen9ou"
+    },
+    {
+      "username": "MM-SmogonSwitch",
+      "display_name": "SmogonSwitcher",
+      "kind": "heuristic",
+      "description": "Grunt with Smogon-style switching heuristics.",
+      "agent": null,
+      "baseline": "SmogonSwitcher",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate-low.",
+      "tags": [
+        "heuristic",
+        "damage",
+        "switching"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-SmogonSwitch, gen9ou"
+    },
+    {
+      "username": "MM-BaseRNN",
+      "display_name": "BaseRNN",
+      "kind": "heuristic",
+      "description": "Small RNN imitation-learning policy trained on an early parsed-replay dataset; CPU inference.",
+      "agent": null,
+      "baseline": "BaseRNN",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Low; pre-Gen9 IL checkpoint.",
+      "tags": [
+        "il",
+        "rnn"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-BaseRNN, gen9ou"
+    },
+    {
+      "username": "MM-WinsOnlyRNN",
+      "display_name": "WinsOnlyRNN",
+      "kind": "heuristic",
+      "description": "BaseRNN variant trained only on human wins.",
+      "agent": null,
+      "baseline": "WinsOnlyRNN",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Low; pre-Gen9 IL checkpoint.",
+      "tags": [
+        "il",
+        "rnn"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-WinsOnlyRNN, gen9ou"
+    },
+    {
+      "username": "MM-MiniRNN",
+      "display_name": "MiniRNN",
+      "kind": "heuristic",
+      "description": "Smaller RNN imitation-learning baseline.",
+      "agent": null,
+      "baseline": "MiniRNN",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Low; pre-Gen9 IL checkpoint.",
+      "tags": [
+        "il",
+        "rnn"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-MiniRNN, gen9ou"
+    },
+    {
+      "username": "MM-KaizoPlus",
+      "display_name": "KaizoPlus",
+      "kind": "heuristic",
+      "description": "Extended version of the Emerald Kaizo ROM-hack AI with additional rules.",
+      "agent": null,
+      "baseline": "KaizoPlus",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate; large handwritten ruleset.",
+      "tags": [
+        "heuristic",
+        "kaizo"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-KaizoPlus, gen9ou"
+    },
+    {
+      "username": "MM-EmeraldKaizo",
+      "display_name": "EmeraldKaizo",
+      "kind": "heuristic",
+      "description": "Port of the AI from the Pokémon Emerald Kaizo ROM hack: scores every option with a large handwritten ruleset.",
+      "agent": null,
+      "baseline": "EmeraldKaizo",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate; the strongest heuristic baseline in the paper's composite.",
+      "tags": [
+        "heuristic",
+        "kaizo"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-EmeraldKaizo, gen9ou"
+    },
+    {
+      "username": "MM-PokeEnv",
+      "display_name": "PokeEnvHeuristic",
+      "kind": "heuristic",
+      "description": "The SimpleHeuristicsPlayer shipped with poke-env (type/damage heuristics).",
+      "agent": null,
+      "baseline": "PokeEnvHeuristic",
+      "checkpoint": null,
+      "params": null,
+      "strength": "Moderate-low; the standard poke-env baseline.",
+      "tags": [
+        "heuristic",
+        "poke-env"
+      ],
+      "format": "gen9ou",
+      "challenge": "/challenge MM-PokeEnv, gen9ou"
+    }
+  ]
+}

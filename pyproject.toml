@@ -37,6 +37,8 @@ dependencies = [
   "ratarmountcore",
   "poke-env @ git+https://github.com/UT-Austin-RPL/poke-env.git",
   "amago @ git+https://github.com/UT-Austin-RPL/amago@v3.4.0",
+  "jupyter>=1.1.1",
+  "python-dotenv>=1.2.4",
 ]
 
 [project.urls]
