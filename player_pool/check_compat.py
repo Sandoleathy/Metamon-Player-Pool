@@ -96,6 +96,10 @@ def _default_cpu() -> None:
     os.environ.pop("PLAYER_POOL_TORCH_COMPILE", None)
     import torch
 
+    # simulate the CPU-only machine the case asserts about (works on any host);
+    # on a real CUDA box the default keeps dynamo enabled (force_compile)
+    torch.cuda.is_available = lambda: False
+
     from player_pool.compat import patch_torch_dynamo
 
     patch_torch_dynamo()

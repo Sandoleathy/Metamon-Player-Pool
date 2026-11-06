@@ -3,8 +3,9 @@ checkpoints/
 
 # Metamon runtime cache (METAMON_CACHE_DIR):
 # HuggingFace checkpoints, team sets and usage stats are downloaded on demand,
-# ~3.2 GB locally. Never commit them.
-metamon_cache/
+# ~2.8 GB locally. Never commit them.
+# (no trailing slash: `metamon_cache` is a symlink to ~/data on this machine)
+metamon_cache
 
 # Weights & Biases
 wandb/
@@ -177,3 +178,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 metamon/data/stats
+
+# pi-agent runtime artifacts / generated knowledge cards
+pi_agent/logs/
+pi_agent/kb/gen9ou/

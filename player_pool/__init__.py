@@ -19,5 +19,7 @@ Entry points:
     python -m player_pool.heuristic_server
     python -m player_pool.check_forward   # offline policy forward check
     python -m player_pool.check_compat    # patch-selection self-check
+    python -m player_pool.check_llm_client  # offline LLM client checks
+    python -m player_pool.llm_client      # OpenCode Go chat client (model backend)
     python -m player_pool.smoke_test      # battle test (needs Showdown server)
 """

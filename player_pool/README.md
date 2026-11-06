@@ -1,13 +1,21 @@
 # Local Gen9 OU opponent pool
 
-A self-contained player pool for the local Pokémon Showdown server, built to
-reproduce the *Battling Track* opponent pool of the PokéAgent Challenge paper:
+The opponent side of the **AI-Trustworthy LLM Pokémon agent** project
+(`project.tex`, CISC7404, University of Macau): a local ladder of scripted
+opponents for the E1 experiments ("agent vs. local metamon pool") and for
+development. It is a self-contained pool for the local Pokémon Showdown
+server, reproducing the *Battling Track* opponent pool of the PokéAgent
+Challenge paper. The public challenge server is closed; this local pool is the
+replacement:
 
 * **10 metamon RL policies** trained for Gen 9 OU (`Abra`, `Kadabra*`,
   `Alakazam`, `Minikazam`, `Superkazam`, `Kakuna`, `SmallRLGen9Beta`).
 * **16 heuristic / IL baselines** registered in `metamon.baselines`
   (`RandomBaseline`, `Grunt`, `GymLeader`, `EmeraldKaizo`, `PokeEnvHeuristic`,
   the three RNN policies, …).
+
+These 26 accounts are the Gen9OU-capable subset of the paper's 40+ baselines;
+Gen1–4-only checkpoints stay out of distribution on this server.
 
 Every player is an ordinary Showdown account that idles on
 `ws://localhost:8000/showdown/websocket`, accepts challenges from anyone in
@@ -59,17 +67,26 @@ The agent can therefore pick uniformly at random, by strength, or by family.
    `|nametaken|...|Your authentication token was invalid.` and no player can
    come online.
 
-2. **Python environment** with `metamon`, `amago`, `poke-env`, `torch`
-   (the repository's `.venv` already has them).
-
-3. **Checkpoints** (~2.8 GB for one checkpoint of each model):
+2. **Local Python environment** with the project installed into it (e.g. virtual
+   env or conda; `pip install -e .[agent]` adds the optional pi-python-core
+   runtime for the LLM player). Checkpoints and team sets are downloaded from
+   HF into `metamon_cache/` (see [AGENTS.md](../AGENTS.md) for naming).
 
    ```shell
-   python -m player_pool.download_models
+   pip install -e .[agent]   # adds pi-python-core; pi-knowledge is optional
+   ```
+
+3. **Checkpoints** (~2.8 GB, all 10 done on this machine, 2026-11-05):
+
+   ```shell
+   python -m player_pool.download_models   # 10/10 ready
    ```
 
    They are stored in `metamon_cache/pretrained_models` (the standard
-   HuggingFace cache used by `metamon.rl.pretrained`).
+   HuggingFace cache used by `metamon.rl.pretrained`). On this machine the
+   directory is a symlink into the big data volume
+   (`~/data/metamon-player-pool/metamon_cache`) so the root disk, which is
+   nearly full, is not touched by multi-GB data.
 
 4. **Team set**: `competitive/gen9ou` is downloaded automatically on first use
    (`get_metamon_teams`). Teams that the local ruleset forbids (Tera Blast,
@@ -136,6 +153,88 @@ python -m player_pool.smoke_test
 `check_forward` is the recommended first check after moving the project to a
 CUDA machine, before starting the pool.
 
+```shell
+# no server and no API key needed: mock-server checks for the LLM client
+python -m player_pool.check_llm_client
+
+# live, keyless: fetches the OpenCode Go model catalog
+python -m player_pool.llm_client --list-models
+```
+
+---
+
+## LLM access for the agent (OpenCode Go)
+
+The agent's model backend (the report's DeepSeek-direct calls) can be routed
+through the OpenCode Console instead of `api.deepseek.com`. OpenCode serves a
+single OpenAI-compatible surface for every Go text model, including the same
+DeepSeek family (`deepseek-v4.1-flash`, `deepseek-v4-pro`, off-peak/peak). This
+matters for the evaluation runs: the same prompts can run direct (pay-as-go
+balance) or under a Go/Go Plus/Go Teams monthly allowance, and E1–E4 cells are
+long enough that either can be the cheaper option.
+
+[`llm_client.py`](llm_client.py) implements this endpoint with the standard
+library only (no new dependency):
+
+| | |
+|---|---|
+| providers | `opencode-go` (default, monthly allowance) · `opencode` (pay-as-you-go balance) |
+| base URL | `https://opencode.ai/inference/go` |
+| endpoint | `POST /openai/v1/chat/completions` (Console translates Anthropic/Gemini models) |
+| auth | `Authorization: Bearer $OPENCODE_API_KEY` (`oc_sk_…` from the OpenCode Console; `OPENCODE_GO_API_KEY` also accepted) |
+| session | `x-opencode-session: ses_…` — **required by Go** (missing it is a `400 MissingSessionID`), generated per client |
+| identity | `User-Agent: metamon-player-pool/0.1.0` — OpenCode asks non-OpenCode clients to identify themselves |
+
+```shell
+export OPENCODE_API_KEY=oc_sk_...
+export OPENCODE_MODEL=deepseek-v4.1-flash
+
+python -m player_pool.llm_client --prompt "Pick the best lead." --json
+python -m player_pool.llm_client --model glm-5.3 --list-models
+```
+
+```python
+from player_pool.llm_client import LLMClient
+
+client = LLMClient(model="deepseek-v4.1-flash")  # reads OPENCODE_API_KEY
+reply = client.chat(
+    [{"role": "user", "content": "Choose a move."}],
+    system="You are a Gen9OU player.",
+    temperature=0.3,
+    max_tokens=256,
+)
+print(reply.text)
+print(reply.usage.allowance)   # dollars of the Go monthly limit this request used
+
+reply = await client.achat(...)  # same call from the agent's event loop
+```
+
+Agent-relevant details:
+
+* **Key storage**: `OPENCODE_API_KEY` from the shell, or the repo-root `.env`
+  (gitignored). The client loads `.env` itself — no dotenv import needed.
+  A working Go key is committed locally as of 2026-11-05 and verified with a
+  real request (`billing_source=go`, `cost=0` inside the plan).
+* One `LLMClient` = one conversation. OpenCode uses the session id for routing
+  and prompt caching, and Go *requires* it. For a battle agent that means one
+  client per game; pass `session_id=` explicitly if the conversation outlives
+  a process.
+* `usage.opencode` in every response reports `cost`, `billing_source`
+  (`go`, `go-plus`, `go-teams`, `balance`, `free`, `byok`) and `allowance`, so
+  the decision trace can log per-turn spend exactly like the report's trace
+  format.
+* Free-tier chat models (`beam-free`, `*-free` ids) answer `HTTP 403` outside
+  OpenCode itself, even with a key — use paid ids from this client.
+* Retries: 408/409/425/429/5xx and network errors retry up to
+  `max_retries` (honouring `Retry-After`); 4xx errors raise `LLMError(status,
+  error_type)` immediately. No key raises `MissingAPIKeyError` before any
+  network call.
+* Need your own provider account instead of Go? Use
+  `LLMClient(provider=..., base_url=...)` only for OpenCode-compatible roots
+  (`https://opencode.ai/inference`). Direct `api.deepseek.com` calls keep using
+  the harness's own DeepSeek client for now — see
+  [Notes and limitations](#notes-and-limitations).
+
 ---
 
 ## How it works
@@ -149,6 +248,8 @@ player_pool/
 ├── pool.py              supervisor: starts/restarts processes, writes player/status json
 ├── download_models.py   prefetch checkpoints from HuggingFace
 ├── smoke_test.py        end-to-end battle test per RL model
+├── llm_client.py        OpenCode Go/Console chat client for the agent (stdlib only)
+├── check_llm_client.py  offline checks for llm_client (mock server)
 ├── compat.py            local workarounds (see below)
 ├── players.json         generated registry for the LLM agent
 └── status.json          generated process status
@@ -195,19 +296,19 @@ upstream module references but forgets to import.
 
 ---
 
-## Running on a CUDA machine
+## Running on any machine
 
-The pool code is platform- and device-agnostic; only the environment setup changes:
+The pool code is platform- and device-agnostic; only the environment setup
+changes on a *new* machine. On a CUDA box it uses flash-attn 2 when it is
+available; on a CPU-only box it uses the CPU fallbacks in `compat.py`.
 
-1. Create a fresh environment on the new machine and install the repo with the
-   CUDA build of PyTorch (the checked-in `.venv` is a Windows CPU build and is
-   not portable):
+1. Create the environment and install:
 
    ```shell
    python -m venv .venv && . .venv/bin/activate
    pip install -e .
-   # install a CUDA torch matching the driver, then optionally flash-attn 2:
-   pip install flash-attn --no-build-isolation   # optional, big speedup
+   # optionally add flash-attn 2 on a CUDA box:
+   pip install flash-attn --no-build-isolation
    ```
 
 2. The AMAGO experiment automatically places the policy on `cuda` when
@@ -215,13 +316,9 @@ The pool code is platform- and device-agnostic; only the environment setup chang
 
 3. The compatibility patches adapt automatically:
 
-   | | CPU box (this machine) | CUDA box + flash-attn | CUDA box, no flash-attn |
-   |---|---|---|---|
-   | attention | CPU fallback | native flash-attn | CPU fallback (runs on GPU) |
-   | `torch.compile` | disabled | enabled | enabled |
-
    Override with `PLAYER_POOL_FLASH_ATTENTION=native|cpu` and
-   `PLAYER_POOL_TORCH_COMPILE=0|1` if needed.
+   `PLAYER_POOL_TORCH_COMPILE=0|1` if needed. `check_compat` covers the cases
+   above.
 
 4. **GPU memory**: each RL player is a separate process, so each loaded policy
    costs its weights plus one CUDA context (~0.3–0.6 GB on top of the model).
@@ -230,25 +327,12 @@ The pool code is platform- and device-agnostic; only the environment setup chang
    `--device cpu` to keep the pool on CPU and run selected models on the GPU in
    separate `rl_player` processes.
 
-5. On Linux the supervisor uses `SIGTERM` and does not pass
-   `CREATE_NEW_PROCESS_GROUP`; everything else (ports, usernames, `players.json`)
-   is identical. If the checkpoints were not copied with the project, rerun
-   `python -m player_pool.download_models`.
-
 ---
 
 ## Notes and limitations
 
-* **CPU by default here.** The local venv has a CPU build of torch. Kakuna/Superkazam
-  (142M) take ~4–6 s to load and roughly 0.1–0.3 s per move; the 57M models are
-  faster. Ten RL processes idle at a few hundred MB each; models are loaded
-  only when challenged. On a CUDA box the same players run on the GPU (see the
-  section above).
-* **FlashAttention approximation (CPU / no-flash-attn only).** The fallback
-  sliding-window attention is computed in float32 with the same window size;
-  outputs match the GPU path up to numerics, but long sequences (> window) are
-  the interesting case. With flash-attn 2 installed on CUDA, the native kernel
-  is used instead.
+* **CPU/GPU plug-ins.** Environment-specific patches are described above; no
+  memory tuning is needed unless a very limited machine is involved.
 * **Sampling.** Policies act with temperature 1.0 (`--temperature` to change),
   matching normal metamon evaluation (`sample=True`).
 * **Ghost users.** If a player process is killed, Showdown can keep the name
