@@ -44,6 +44,10 @@ async def play_one(
         )
     finally:
         try:
+            await player.close()
+        except Exception:
+            pass
+        try:
             await player.ps_client.stop_listening()
         except Exception:
             pass

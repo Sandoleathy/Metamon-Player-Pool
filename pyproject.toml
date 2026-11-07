@@ -42,7 +42,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-agent = ["pi-python-core>=0.12.0"]
+# pi-python-core needs Python >=3.11; the baseline still supports 3.10, so the
+# extra is a no-op there instead of making the whole project uninstallable.
+agent = ["pi-python-core>=0.12.0; python_full_version >= '3.11'"]
+
+[tool.uv]
+# The poke-env fork pins ``websockets==12.0`` and imports the legacy
+# ``websockets.client`` module, which websockets 14 removed. pi-python-core asks
+# for ``websockets>=14.2`` but only imports websockets lazily, in its optional
+# ChatGPT/Codex WebSocket transport; pi_agent talks to OpenCode Go over HTTP
+# (httpx) and never touches that path. Pin the one version poke-env can import.
+override-dependencies = ["websockets==12.0"]
 
 [project.urls]
 Homepage = "https://metamon.tech"

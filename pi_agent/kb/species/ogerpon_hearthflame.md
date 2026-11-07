@@ -1,0 +1,5 @@
+# Ogerpon-Hearthflame
+
+type: Grass/Fire
+stat: hp80/atk120/def84/spa60/spd96/spe110
+ability: 0:Mold Breaker

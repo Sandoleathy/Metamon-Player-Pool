@@ -61,17 +61,17 @@ def build_tools(context: TurnContext, config: AgentConfig) -> list[Any]:
 
     @tool(name="calculate_damage")
     def calculate_damage(move: str) -> str:
-        """Estimate the user's active Pokemon's damage against the active opponent."""
-        from .damage import estimate_damage_percent
+        """Estimate one legal move's damage, type effect, KO chance and turn order."""
+        from .damage import estimate_damage
 
         found = context.find_move(move)
-        if found is None or found.base_power == 0:
-            return f"move {move!r} is not a damaging legal move"
+        if found is None:
+            return f"move {move!r} is not a legal move this turn"
         user = getattr(battle, "active_pokemon", None)
         opponent = getattr(battle, "opponent_active_pokemon", None)
         if user is None or opponent is None:
             return "no active Pokemon; cannot compute damage"
-        return estimate_damage_percent(user, found.order, opponent, battle)
+        return estimate_damage(user, found.order, opponent, battle)
 
     tools: list[Any] = [get_battle_state, get_available_actions, calculate_damage]
     if config.rag and context.knowledge is not None:

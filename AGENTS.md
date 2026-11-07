@@ -58,8 +58,13 @@ pi_agent/
 
 ## Quick start
 
-1. `pip install -e .[agent]` in your project environment; `pi-knowledge` is optional
-   and must be installed separately:
+1. Install the project with the agent extra. With uv: `uv sync --extra agent`
+   (plain `uv sync` resolves the lock but does not install the extra). With pip,
+   install pi-python-core without its resolver seeing the pin clash:
+   `pip install -e . && pip install --no-deps pi-python-core` — the poke-env fork
+   needs `websockets==12.0`, which `pyproject.toml` pins via `[tool.uv]
+   override-dependencies`. `pi-knowledge` is optional and must be installed
+   separately:
    ```bash
    # optional, inside pi_agent/:
    npm install pi-knowledge

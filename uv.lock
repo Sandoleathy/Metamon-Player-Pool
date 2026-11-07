@@ -17,6 +17,9 @@ resolution-markers = [
     "python_full_version < '3.11'",
 ]
 
+[manifest]
+overrides = [{ name = "websockets", specifier = "==12.0" }]
+
 [[package]]
 name = "accelerate"
 version = "1.15.0"
@@ -2196,6 +2199,11 @@ dependencies = [
     { name = "wandb" },
 ]
 
+[package.optional-dependencies]
+agent = [
+    { name = "pi-python-core", marker = "python_full_version >= '3.11'" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "amago", git = "https://github.com/UT-Austin-RPL/amago?rev=v3.4.0" },
@@ -2207,6 +2215,7 @@ requires-dist = [
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "lz4" },
     { name = "numpy" },
+    { name = "pi-python-core", marker = "python_full_version >= '3.11' and extra == 'agent'", specifier = ">=0.12.0" },
     { name = "poke-env", git = "https://github.com/UT-Austin-RPL/poke-env.git" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "ratarmountcore" },
@@ -2216,6 +2225,7 @@ requires-dist = [
     { name = "tqdm" },
     { name = "wandb" },
 ]
+provides-extras = ["agent"]
 
 [[package]]
 name = "mistune"
@@ -3340,6 +3350,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9e/c3/059298687310d527a58bb01f3b1965787ee3b40dce76752eda8b44e9a2c5/pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523", size = 63772, upload-time = "2023-11-25T06:56:14.81Z" },
+]
+
+[[package]]
+name = "pi-python-core"
+version = "0.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx", marker = "python_full_version >= '3.11'" },
+    { name = "jsonschema", marker = "python_full_version >= '3.11'" },
+    { name = "websockets", marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d9/93/6b2a8f1bf9af30dc1214b4ed892504a3597eb8ccecc1d9bfda6ecdf700bc/pi_python_core-0.12.0.tar.gz", hash = "sha256:048341715465b2e17393075cbcbfa40f63d25788a64956f03d64aa8d1092a94f", size = 589711, upload-time = "2026-10-28T23:46:22.956Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/8b/381b884a98b9d9365656365e9d63bb0c3064bf2d762e32c8d293498c2be4/pi_python_core-0.12.0-py3-none-any.whl", hash = "sha256:1d53bbc7201a20a7481c6422da6de38e5fc84443907f0601fe377ab43afed132", size = 186187, upload-time = "2026-10-28T23:46:21.577Z" },
 ]
 
 [[package]]

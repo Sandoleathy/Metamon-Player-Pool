@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-ACTION_RE = re.compile(r"\{.*\}", re.DOTALL)
+_ACTION_KEYS = {"move", "switch", "tera", "terastallize", "action", "target"}
 
 
 @dataclass
@@ -165,18 +165,74 @@ def highest_power_move(actions: Iterable[ActionChoice]) -> ActionChoice | None:
     return max(moves, key=lambda a: a.base_power or 0)
 
 
+def _strip_code_fence(text: str) -> str:
+    stripped = text.strip()
+    if not stripped.startswith("```"):
+        return stripped
+    lines = stripped.splitlines()
+    if lines and lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
+def _json_objects(text: str) -> list[dict[str, Any]]:
+    """Every top-level JSON object in ``text``, in order of appearance."""
+    decoder = json.JSONDecoder()
+    found: list[dict[str, Any]] = []
+    for index, char in enumerate(text):
+        if char != "{":
+            continue
+        try:
+            value, _end = decoder.raw_decode(text[index:])
+        except ValueError:
+            continue
+        if isinstance(value, dict):
+            found.append(value)
+    return found
+
+
 def parse_answer(text: str | None) -> dict[str, Any] | None:
-    """Tolerant extractor: the model may wrap JSON in prose or a code fence."""
+    """Tolerant extractor: the action object out of prose or a code fence.
+
+    The model may wrap its answer in text, fence it, or emit several JSON
+    objects while thinking.  Only an object that carries an action key counts;
+    anything else means "no legal action" and triggers the repair prompt.
+    """
     if not text:
         return None
-    candidate = text.strip()
-    if candidate.count("{") > 1 or "\n" in candidate:
-        match = ACTION_RE.search(candidate)
-        if not match:
-            return None
-        candidate = match.group(0)
-    try:
-        data = json.loads(candidate)
-    except ValueError:
-        return None
-    return data if isinstance(data, dict) else None
+    candidates = _json_objects(_strip_code_fence(text))
+    for candidate in reversed(candidates):
+        if _ACTION_KEYS.intersection(candidate):
+            return candidate
+    return None
+
+
+def build_repair_prompt(
+    actions: Iterable[ActionChoice], previous_answer: str | None, limit: int = 1200
+) -> str:
+    """A second attempt that names the legal ids and the exact JSON shape."""
+    choices = list(actions)
+    moves = [action.name for action in choices if action.kind == "move"]
+    switches = [action.name for action in choices if action.kind == "switch"]
+    tera = any(action.tera for action in choices if action.kind == "move")
+
+    examples: list[str] = []
+    if moves:
+        examples.append('{"move":"' + moves[0] + '"}')
+        if tera:
+            examples.append('{"move":"' + moves[0] + '","tera":true}')
+    if switches:
+        examples.append('{"switch":"' + switches[0] + '"}')
+
+    return (
+        "Your previous answer did not contain a legal action.\n"
+        f"Previous answer: {(previous_answer or '')[:limit]}\n"
+        f"Legal moves: {', '.join(moves) or '(none)'}\n"
+        f"Legal switches: {', '.join(switches) or '(none)'}\n"
+        "Reply with exactly one JSON object using one of those ids, for example "
+        + " or ".join(examples or ['{"move":"<move id>"}'])
+        + "."
+    )
+
